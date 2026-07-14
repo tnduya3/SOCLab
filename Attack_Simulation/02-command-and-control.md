@@ -15,7 +15,7 @@
 > **Beacon Jitter:** 50%
 
 ### Understanding MS Dev Tunnels Role in Compromises
-![[DevTunnel_Explain.png]]
+![DevTunnel host](../assets/dnstunnling/DevTunnel_Explain.png)
 
 Dev Tunnels can be configured in two fundamentally different ways. A half-tunnel establishes a connection between just one endpoint (either the victim system or the adversary system) and the Microsoft Dev Tunnels server. This creates only one segment of the potential communication path. In contrast, a full tunnel creates a complete endpoint-to-endpoint connection that bridges both systems through the Dev Tunnels server, enabling direct communication between the victim and adversary systems.
 
@@ -37,7 +37,7 @@ bash
 devtunnel host -p 443 --allow-anonymous
 ```
 
-![[dev.png]]
+![DevTunnel host](../assets/dnstunnling/dev.png)
 
 This exposes a Microsoft-hosted tunnel endpoint that the victim will connect out to. Because the tunnel is anonymous and TLS-wrapped by Microsoft's own infrastructure, it carries a valid, trusted certificate, not one that will trip certificate-based detection.
 
@@ -47,7 +47,7 @@ This exposes a Microsoft-hosted tunnel endpoint that the victim will connect out
 devtunnel connect <tunnel_id>
 ```
 
-![[dev2.png]]
+![DevTunnel connect](../assets/dnstunnling/dev2.png)
 
 This creates an outbound-only connection from Windows host to the Microsoft Dev Tunnels service. From the DMZ's perspective, this is indistinguishable from a legitimate developer using Dev Tunnels, a valid MS-signed HTTPS session to a Microsoft-owned endpoint.
 
@@ -64,4 +64,4 @@ _(To be expanded in the detection-engineering document, noting here as a placeho
 
 ### Evidence
 
-![[informer.png]]
+![Imformer](../assets/dnstunnling/informer.png)
