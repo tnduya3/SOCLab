@@ -4,7 +4,7 @@
 
 This document provides a high-level summary of the SOC homelab environment: its zones, trust boundaries, monitoring layer, and intended attack surface. It is a companion to the **Architecture Document**, which contains full IP addressing, VLAN configuration, firewall rulesets, and pfSense-specific configuration. This overview is meant to orient a reader technical or not on _what the lab is_ and _why it's shaped this way_, before diving into implementation detail.
 
-![High-Level Topology Diagram](assets/topo/overview_system.png)
+![High-Level Topology Diagram](../assets/topo/overview_system.png)
 
 ## Design Intent
 

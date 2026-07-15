@@ -12,7 +12,7 @@
 
 **Action:** Invoke Havoc's `CmstpElevatedCOM` module to abuse the elevated CMLuaUtil COM interface, forcing `dllhost.exe` to act as a COM surrogate under a SYSTEM logon and execute the Havoc agent with elevated privileges.
 
-**Result:** SYSTEM-level access on IIS_Server, escalating from the [[02-command-and-control]]  foothold's original privilege level.
+**Result:** SYSTEM-level access on IIS_Server, escalating from the [[Attack_Simulation/02-command-and-control]]  foothold's original privilege level.
 
 ---
 ## Understanding UAC 
