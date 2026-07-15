@@ -1,9 +1,9 @@
-# Detection Report — Stage 2: Command & Control (Havoc over MS Dev Tunnels)
+# Detection Report - Stage 2: Command & Control (Havoc over MS Dev Tunnels)
 
 > **Cross-reference:** `02-command-and-control.md` - attack execution detail 
 > **Target Host/Victim/Agent in this scope:** 10.20.30.2 (Windows 10 Pro x64)
 > **Log sources:** Sysmon (SwiftOnSecurity config), shipped via Wazuh agent → Wazuh Cloud 
-> **Modeled precondition:** _RCE via Stage 1 has not yet been implemented in this lab. For the purposes of this report, code execution is assumed established, with `w3wp.exe` as the parent of the first PowerShell instance. This is a modeled/simulated precondition, not captured telemetry  everything from that point forward reflects real Sysmon behavior for the actions described._
+> **Modeled precondition:** RCE via Stage 1 has not yet been implemented in this lab. For the purposes of this report, code execution is assumed established, with `w3wp.exe` as the parent of the first PowerShell instance. This is a modeled/simulated precondition, not captured telemetry  everything from that point forward reflects real Sysmon behavior for the actions described.
 
 ---
 
