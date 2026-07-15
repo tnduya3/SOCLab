@@ -1,3 +1,5 @@
+# Stage 4: Credential Access - Token Impersonate
+
 > **Malware:** [Havoc C2](https://github.com/HavocFramework/Havoc) 
 > **MITRE Tactics:** [TA0006 Credential Access](https://attack.mitre.org/tactics/TA0006/), [TA0004 Privilege Escalation](https://attack.mitre.org/tactics/TA0004/) 
 > **MITRE Techniques:** [T1134 Access Token Manipulation](https://attack.mitre.org/techniques/T1134/), [T1134.001 Token Impersonation/Theft](https://attack.mitre.org/techniques/T1134/001/) 
