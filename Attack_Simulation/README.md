@@ -5,7 +5,7 @@
 | 1     | Initial Access                         | Exploit Public-Facing Application (T1190) - Likeshop SSRF (CVE-2024-24028) → RCE                                    | RCE chain in progress |
 | 2     | Command & Control                      | Protocol Tunneling (T1572) - Havoc C2 over Microsoft devtunnel                                                      | Implemented           |
 | 3     | Privilege Escalation                   | Bypass UAC (T1548.002) - CmstpElevatedCOM / CMLuaUtil COM elevation                                                 | Implemented           |
-| 4     | Privilege Escalation / Defense Evasion | Access Token Manipulation (T1134) - token impersonation                                                             | Implemented           |
+| 4     | Privilege Escalation / Defense Evasion | Access Token Manipulation (T1134) - Token impersonation                                                             | Implemented           |
 | 5     | Lateral Movement                       | Remote Services: SMB/Admin Shares (T1021.002) — SMB named pipe pivot + PsExec, authenticated via impersonated token | Implemented           |
 | 6     | Persistence                            | *TBD*                                                                                                               | Not yet implemented   |
 
