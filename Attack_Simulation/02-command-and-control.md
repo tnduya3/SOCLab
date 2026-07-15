@@ -14,6 +14,7 @@
 > **Beacon Delay:** 02 seconds
 > **Beacon Jitter:** 50%
 
+---
 ### Understanding MS Dev Tunnels Role in Compromises
 ![DevTunnel host](../assets/dnstunnling/DevTunnel_Explain.png)
 
@@ -25,6 +26,7 @@ However, here’s the crucial aspect that makes this particularly significant fo
 
 Based on this, there are three main ways in which Dev Tunnels may be misused by threat actors: tunneling egress C2 traffic using a half-tunnel, tunneling egress C2 traffic using a full tunnel, or tunneling ingress traffic using a full tunnel.
 
+---
 ### Execution
 
 With code execution already established from Stage 1, the next objective was to upgrade this foothold into a durable, interactive C2 channel without exposing a directly reachable listener on the DMZ host.
@@ -65,3 +67,5 @@ _(To be expanded in the detection-engineering document, noting here as a placeho
 ### Evidence
 
 ![Imformer](../assets/dnstunnling/informer.png)
+
+---

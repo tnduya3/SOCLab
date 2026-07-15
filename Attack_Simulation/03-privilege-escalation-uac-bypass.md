@@ -8,6 +8,13 @@
 > **Starting Privilege Level:** Local Administrator with medium integrity level privilege 
 > **Resulting Privilege Level:** Local Administrator with high integrity level privilege
 
+**Precondition:** Interactive Havoc C2 session, established in Stage 2 - Command & Control, running under a non-elevated user context.
+
+**Action:** Invoke Havoc's `CmstpElevatedCOM` module to abuse the elevated CMLuaUtil COM interface, forcing `dllhost.exe` to act as a COM surrogate under a SYSTEM logon and execute the Havoc agent with elevated privileges.
+
+**Result:** SYSTEM-level access on IIS_Server, escalating from the [[02-command-and-control]]  foothold's original privilege level.
+
+---
 ## Understanding UAC 
 The canonical example is when a process is launched elevated (for example, by right-clicking it in Explorer and selecting “Run as Administrator”. Here is a diagram showing the major components in an elevation procedure:
 
@@ -26,6 +33,7 @@ This entire elevation flow relies heavily on **trusted components** behaving as 
 - Or convince Windows that elevation is already allowed
 So instead of clicking _Run as Administrator_, the attacker finds a way to trigger a similar elevation path **without the prompt**. Same destination, fewer questions.
 
+---
 ## Execution
 
 With interactive C2 channel with Dev Tunnel from Stage 2, the next objective was to bypass UAC and gain High integrity level privilege in this host.
@@ -47,7 +55,7 @@ uac-bypass elevatedcom <Path_to_Execute_file>
 
 **3. Confirm resulting privilege level**
 
-![tnduya3's GitSkins profile skin](../assets/UAC/confirm_privs.png)
+![Confirm Privilege](../assets/UAC/confirm_privs.png)
 
 ### Detection Considerations
 
@@ -56,3 +64,5 @@ _(To be expanded in the detection-engineering document — noting here as a plac
 - Sysmon Event ID 1 (process creation): `dllhost.exe` spawning an unexpected child process (the Havoc agent executable), especially where the parent/child relationship or command line doesn't match normal COM surrogate usage.
 - Sysmon Event ID 10 (process access) or Event ID 7 (image load) around `dllhost.exe` loading the CMLuaUtil COM object, if instrumented.
 - Anomalous SYSTEM-level process spawning shortly after a non-elevated C2 session was active on the same host — correlate process lineage/timestamps in Wazuh.
+
+---
