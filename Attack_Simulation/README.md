@@ -51,3 +51,5 @@ Each stage is documented in detail in its corresponding file:
 - [03-privilege-escalation-uac-bypass](./Attack_Simulation/03-privilege-escalation-uac-bypass.md)
 - [04-token-impersonation](./Attack_Simulation/04-token-impersonation.md)
 - [05-lateral-movement](./Attack_Simulation/05-lateral-movement.md)
+
+
