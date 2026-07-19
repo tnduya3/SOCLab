@@ -1,8 +1,8 @@
 # Detection Report - Stage 2: Command & Control (Havoc over MS Dev Tunnels)
 
-> **Cross-reference:** `02-command-and-control.md` - attack execution detail 
-> **Target Host/Victim/Agent in this scope:** 10.20.30.2 (Windows 10 Pro x64)
-> **Log sources:** Sysmon (SwiftOnSecurity config), shipped via Wazuh agent → Wazuh Cloud 
+> **Cross-reference:** `02-command-and-control.md` - attack execution detail     
+> **Target Host/Victim/Agent in this scope:** 10.20.30.2 (Windows 10 Pro x64)    
+> **Log sources:** Sysmon (SwiftOnSecurity config), shipped via Wazuh agent → Wazuh Cloud, Suricata IDS     
 > **Modeled precondition:** RCE via Stage 1 has not yet been implemented in this lab. For the purposes of this report, code execution is assumed established, with `w3wp.exe` as the parent of the first PowerShell instance. This is a modeled/simulated precondition, not captured telemetry  everything from that point forward reflects real Sysmon behavior for the actions described.
 
 ---
@@ -83,7 +83,31 @@ This is also worth distinguishing from the _beacon_ timing (2s delay, 50% jitter
 
 ---
 
-## 4. Detection Logic
+## 4. Network-Layer Detection: DNS Resolution Leaks Before the Tunnel Ever Forms
+
+Everything in Section 2 assumes the analyst is starting from host telemetry. But there's a detection opportunity that happens _before_ either branch above even runs and it doesn't depend on Sysmon at all.
+
+The TLS tunnel itself is, as established, resistant to signature-based detection: the destination is legitimate, Microsoft-owned infrastructure, and no static IP or content signature will flag it. But the tunnel client still has to _resolve a domain name_ before it can open that TLS session, and that resolution happens in plain DNS, unencrypted, before the protected channel exists. That's a leak the technique doesn't cover, and it turned out to be catchable in this lab with a stock Suricata signature no custom rule needed:
+
+```json
+"signature": "ET INFO Microsoft Dev Tunnels Domain (tunnels .api .visualstudio .com) in DNS Lookup"
+"src_ip": "10.20.30.2"        // Havoc agent host
+"dest_ip": "10.10.10.3"       // internal AD DNS server, AD_Zone
+"dest_port": "53"
+"queries": [{ "rrname": "asse-data.rel.tunnels.api.visualstudio.com", "rrtype": "A" }]
+"rule.level": 3
+"rule.firedtimes": 58
+```
+
+**The burst pattern is the stronger signal, not the domain match alone.** This alert fired **17 times within a single second**. A normal client resolves a name once and relies on OS/resolver caching it does not re-query the same name over a dozen times in the same second. That kind of rapid-fire repetition is far more specific to a client aggressively (re)establishing or retrying a tunnel connection than the domain match by itself, which as an `Informational`, `rule.level: 3` alert is exactly the kind of low-priority signal that gets lost in normal alert volume if nobody is also watching for frequency.
+
+![17 identicial](../assets/dnstunnling/17_Iden.png)
+
+**Architectural note:** the query crosses from the DMZ host (`10.20.30.2`) into AD_Zone (`10.10.10.3`, the internal AD-integrated DNS server) to resolve a public _external_ Microsoft domain. That's worth stating plainly as a design fact of this lab DMZ hosts are configured to use internal AD DNS for all resolution, including public internet names since it's the reason Suricata (sitting on `172.11.20.142`, watching traffic toward AD_Zone) saw this query at all. In a network where DMZ hosts used a separate, non-AD-facing external resolver, this same detection opportunity would exist but at a different collection point.
+
+---
+
+## 5. Detection Logic
 
 **Primary rule (process anomaly + loopback/tunnel pairing):**
 
@@ -95,9 +119,14 @@ This is also worth distinguishing from the _beacon_ timing (2s delay, 50% jitter
 
 - Any process on a DMZ-zone, non-developer-designated host establishing outbound HTTPS to `*.devtunnels.ms` flag for review regardless of process ancestry, since legitimate use of Dev Tunnels on a production IIS server should not exist in the first place.
 
+**Network rule - DNS burst on Dev Tunnels domain (Suricata, host-independent):**
+
+- Trigger: ET signature `2063119` ("Microsoft Dev Tunnels Domain in DNS Lookup") firing more than N times (e.g., >5) within a short window (e.g., 60 seconds) from a single source IP, especially where the source is not a designated developer workstation.
+- This rule requires no host-level telemetry at all and is independently actionable at the network layer, a meaningful complement given it can catch the setup phase even on hosts where Sysmon/Wazuh agent coverage is missing or delayed.
+- Raise this signature's effective priority above its default `Informational`/level-3 severity when frequency-thresholded like this, the domain match alone is low-confidence, but the burst pattern is not.
 ---
 
-## 5. Gaps and Blind Spots
+## 6. Gaps and Blind Spots
 
 - **No visibility into the actual C2 server.** `172.11.20.131` is attacker infrastructure, not a monitored asset, Wazuh has zero telemetry there. Everything in this report is reconstructed from the victim side only.
 - **Event ID 3 dependency.** This entire correlation assumes Sysmon Event ID 3 is actively logging for these processes. Under a stock SwiftOnSecurity configuration this is often filtered or limited, confirm your deployed config actually captures Event ID 3 for non-standard processes before relying on this rule in production; if it doesn't, the loopback/tunnel-IP pairing in this report is unobservable and you're left with process-creation anomalies (Event ID 1) alone.

@@ -30,13 +30,13 @@
 
 ### Stage 4: Credential Access
 **Precondition:** SYSTEM access on IIS_Server (domain-joined)  
-**Action**: Perform Access Token Impersonate
+**Action**: Perform Access Token Impersonate   
 **Action (Future):** Perform Kerberoasting attack — request TGS tickets for domain service accounts, extract and prepare for offline cracking  
 **Result:** Valid domain admin credential
 
 ### Stage 5: Lateral Movement
 **Precondition:** Valid domain credentials from Stage 4   
-**Action:** Pivot from IIS_Server (DMZ) to AD_Zone via SMB named pipe + PsExec, authenticated with cracked credentials  
+**Action:** Pivot from IIS_Server (DMZ) to AD_Zone via SMB named pipe + PsExec, authenticated with cracked credentials   
 **Result:** Code execution with SYSTEM-level access on target host in AD_Zone
 
 ### Stage 6: Persistence
